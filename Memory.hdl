@@ -1,0 +1,31 @@
+// NAME: Juan Figueroa
+// UIN: 626003173
+
+
+CHIP Memory {
+	
+    IN  in[16],       // Data to be written into memory
+        load,      	  // Variable which decides whether to write to memory or not
+        address[16];  // Address for the register which we want access
+    
+    OUT out[16];      // Output from the memory
+
+    PARTS:
+    // Add your code here
+    // Data Memory has three sections: 32K RAM, 8K Screen, 1 Keyboard. Unit is 1 word (16 bits)
+	DMux(in = load, sel = address[15], a = toRam, b = toScreen);
+	
+    // Address RAM (32K) with 15 address bits [0..14]
+	RAM32K(in = in, load = toRam, address = address[0..14], out = outRAM);
+
+
+    // Address SCREEN(8K) with address[0..12] will be used to map the address to the screen
+	Screen(in = in, load = toScreen, address = address[0..12], out = outScreen);
+
+    // Address KEYBOARD(1) 
+	Keyboard(out = outKeyboard);
+
+    // Combine all of them in a mux (Hint: Mux8Way16)
+	Mux8Way16(a = outRAM, b=false, c=false, d = outRAM, e = outScreen, f = outKeyboard, g=false, h=false, sel = address[13..15], out = out);
+	
+}
