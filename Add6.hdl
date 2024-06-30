@@ -1,0 +1,21 @@
+//Name: Juan Figueroa
+//UIN: 626003173
+
+/**
+ * Adds two 6-bit values
+ * The chip performs out=a+b
+ * Both inputs a and b are UNSIGNED 
+ * The carry output reflects the overflow of the Add6 chip
+ * YOU CAN ONLY USE Add4 TO BUILD THIS CHIP, NOT ANY OTHER COMPONENTS
+ */
+
+
+CHIP Add6 {
+    IN a[6], b[6];
+    OUT out[6],carry;
+
+    PARTS:
+    // Put your code here:
+	Add4(a = a[0..3], b = b[0..3], c = false, out = out[0..3], carry = carry01);
+	Add4(a[0..1]=a[4..5], a[2..3]=true, b[0..1]=b[4..5], b[2..3]=false, c = carry01, out[0..1]=out[4..5], out[2..3]=false, carry=carry);
+}

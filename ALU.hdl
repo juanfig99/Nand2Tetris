@@ -1,0 +1,81 @@
+// Name: Juan Figueroa
+// UIN: 626003173
+
+/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x & y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out < 0) set ng = 1
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // bitwise not the x input?
+        zy, // zero the y input?
+        ny, // bitwise not the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // bitwise not the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+	// apply zx and nx to input x
+	Mux16(a = x, b = false, sel = zx, out = xZX);
+	Not16(in = xZX, out = notxZX);
+	Mux16(a = xZX, b = notxZX, sel = nx, out = xFinal);
+	
+	//apply zy and ny to input y
+	Mux16(a = y, b = false, sel = zy, out = yZY);
+	Not16(in = yZY, out = notyZY);
+	Mux16(a = yZY, b = notyZY, sel = ny, out = yFinal);
+	
+	// apply f to input x and y
+	Add16(a = xFinal, b = yFinal, out = XplusY);
+	And16(a = xFinal, b = yFinal, out = XandY);
+	Mux16(a = XandY, b = XplusY, sel = f, out = xyAppliedF);
+	
+	// apply no to output
+	Not16(in = xyAppliedF, out = notxyAppliedF);
+	Mux16(a = xyAppliedF, b = notxyAppliedF, sel = no, out[0..15] = out, out[15] = checkNG);
+	
+	// make copy of output to determine zr and ng
+	Mux16(a = xyAppliedF, b = notxyAppliedF, sel = no, out = outCopy);
+	
+	// determine ng
+	And(a = checkNG , b = true, out = ng);
+	
+	// determine zr
+	ActiveCounter16(in = outCopy, out[0] = a, out[1] = b, out[2] = c, out[3] = d, out[4] = e);
+	Or(a = a, b = b, out = aORb);
+	Or(a = c, b = d, out = cORd);
+	Or(a = aORb, b = cORd, out = OR1);
+	Nor(a = e, b = OR1, out = zr);
+	
+   
+   
+   
+   
+   
+   
+}

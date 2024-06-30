@@ -1,0 +1,13 @@
+// Name: Juan Figueroa 
+// UIN: 626003173
+
+CHIP Bit {
+    IN in, load;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+	Mux(a = Qf, b = in, sel = load, out = D);
+	DFF(in = D, out = out, out = Qf);
+	
+}

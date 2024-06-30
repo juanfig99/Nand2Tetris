@@ -1,0 +1,29 @@
+// NAME: Juan Figueroa
+// UIN: 626003173
+
+/**
+ * 8-way demultiplexor:
+ * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
+ *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
+ *                            {0, 0, in, 0, 0, 0, 0, 0} if sel == 010
+ *                            {0, 0, 0, in, 0, 0, 0, 0} if sel == 011
+ *                            {0, 0, 0, 0, in, 0, 0, 0} if sel == 100
+ *                            {0, 0, 0, 0, 0, in, 0, 0} if sel == 101
+ *                            {0, 0, 0, 0, 0, 0, in, 0} if sel == 110
+ *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
+ */
+
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    // Put your code here:
+	DMux(in = in, sel= sel[2], a = outA2, b = outB2);
+	DMux(in = outA2, sel = sel[1], a = outA10, b = outB10);
+	DMux(in = outA10, sel = sel[0], a = a, b = b);
+	DMux(in = outB10, sel = sel[0], a = c, b = d);
+	DMux(in = outB2, sel = sel[1], a = outA11, b = outB11);
+	DMux(in = outA11, sel = sel[0], a = e, b = f);
+	DMux(in = outB11, sel = sel[0], a = g, b = h);
+}

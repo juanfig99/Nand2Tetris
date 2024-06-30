@@ -1,0 +1,55 @@
+// Name: Juan Figueroa
+// UIN: 626003173
+
+/**
+ * Adds or Subtracts two 10-bit values.
+ * Both inputs a and b are in SIGNED 2s complement format
+ * when sub == 0, the chip performs add i.e. out=a+b
+ * when sub == 1, the chip performs subtract i.e. out=a-b
+ */
+
+CHIP AddSub10 {
+    IN a[10], b[10], sub;
+    OUT out[10],overflow;
+
+    PARTS:
+   // Put your code here:
+   
+   
+   
+   Not(in = b[0], out = nb0);
+   Not(in = b[1], out = nb1);
+   Not(in = b[2], out = nb2);
+   Not(in = b[3], out = nb3);
+   Not(in = b[4], out = nb4);
+   Not(in = b[5], out = nb5);
+   Not(in = b[6], out = nb6);
+   Not(in = b[7], out = nb7);
+   Not(in = b[8], out = nb8);
+   Not(in = b[9], out = nb9);
+   
+   Mux(a = b[0], b = nb0, sel = sub, out = b0);
+   Mux(a = b[1], b = nb1, sel = sub, out = b1);
+   Mux(a = b[2], b = nb2, sel = sub, out = b2);
+   Mux(a = b[3], b = nb3, sel = sub, out = b3);
+   Mux(a = b[4], b = nb4, sel = sub, out = b4);
+   Mux(a = b[5], b = nb5, sel = sub, out = b5);
+   Mux(a = b[6], b = nb6, sel = sub, out = b6);
+   Mux(a = b[7], b = nb7, sel = sub, out = b7);
+   Mux(a = b[8], b = nb8, sel = sub, out = b8);
+   Mux(a = b[9], b = nb9, sel = sub, out = b9);
+   
+   FullAdder(a = a[0], b = b0, c = sub,     sum = out[0], carry = carry01);
+   FullAdder(a = a[1], b = b1, c = carry01, sum = out[1], carry = carry12);
+   FullAdder(a = a[2], b = b2, c = carry12, sum = out[2], carry = carry23);
+   FullAdder(a = a[3], b = b3, c = carry23, sum = out[3], carry = carry34);
+   FullAdder(a = a[4], b = b4, c = carry34, sum = out[4], carry = carry45);
+   FullAdder(a = a[5], b = b5, c = carry45, sum = out[5], carry = carry56);
+   FullAdder(a = a[6], b = b6, c = carry56, sum = out[6], carry = carry67);
+   FullAdder(a = a[7], b = b7, c = carry67, sum = out[7], carry = carry78);
+   FullAdder(a = a[8], b = b8, c = carry78, sum = out[8], carry = carry89);
+   FullAdder(a = a[9], b = b9, c = carry89, sum = out[9], carry = carry910);
+   
+   Xor(a = carry89, b = carry910, out = ifSub);
+   Mux(a = carry910, b = ifSub, sel = sub, out = overflow);
+}
